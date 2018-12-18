@@ -1,7 +1,10 @@
 package com.github.kpavlov.jreactive8583.netty.codec;
 
+import static org.slf4j.LoggerFactory.getLogger;
+import org.slf4j.Logger;
 import com.solab.iso8583.IsoMessage;
 import com.solab.iso8583.MessageFactory;
+import com.solab.iso8583.util.HexCodec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -11,6 +14,7 @@ import java.util.List;
 
 public class Iso8583Decoder extends ByteToMessageDecoder {
 
+    protected static final Logger logger = getLogger(Iso8583Decoder.class);
     private final MessageFactory messageFactory;
 
     public Iso8583Decoder(MessageFactory messageFactory) {
@@ -30,6 +34,7 @@ public class Iso8583Decoder extends ByteToMessageDecoder {
         byte[] bytes = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(bytes);
 
+        logger.debug("Message Received: {}", HexCodec.hexEncode(bytes, 0, bytes.length));
         final IsoMessage isoMessage = messageFactory.parseMessage(bytes, 0);
         if (isoMessage != null) {
             //noinspection unchecked
