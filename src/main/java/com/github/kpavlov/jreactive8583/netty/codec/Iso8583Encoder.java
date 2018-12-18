@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 
 @ChannelHandler.Sharable
 public class Iso8583Encoder extends MessageToByteEncoder<IsoMessage> {
+    private static final Logger logger = LoggerFactory.getLogger(Iso8583Encoder.class);
 
     private final int lengthHeaderLength;
 
@@ -22,9 +23,12 @@ public class Iso8583Encoder extends MessageToByteEncoder<IsoMessage> {
         if (lengthHeaderLength == 0) {
             byte[] bytes = isoMessage.writeData();
             out.writeBytes(bytes);
+            logger.debug("Sent Message: {}", HexCodec.hexEncode(bytes, 0, bytes.length));
         } else {
-            ByteBuffer byteBuffer = isoMessage.writeToBuffer(lengthHeaderLength);
-            out.writeBytes(byteBuffer);
+            final ByteBuffer byteBuffer = isoMessage.writeToBuffer(lengthHeaderLength);
+            final byte[] array = byteBuffer.array();
+            out.writeBytes(array);
+            logger.debug("Sent Message: {}", HexCodec.hexEncode(array, 0, array.length));
         }
     }
 }

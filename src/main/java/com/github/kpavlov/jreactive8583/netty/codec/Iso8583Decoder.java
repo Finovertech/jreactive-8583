@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.util.List;
 
 public class Iso8583Decoder extends ByteToMessageDecoder {
+    private static final Logger logger = LoggerFactory.getLogger(Iso8583Decoder.class);
 
     private final MessageFactory messageFactory;
 
@@ -31,6 +32,7 @@ public class Iso8583Decoder extends ByteToMessageDecoder {
         byteBuf.readBytes(bytes);
 
         final IsoMessage isoMessage = messageFactory.parseMessage(bytes, 0);
+        logger.debug("Received Message: {}", HexCodec.hexEncode(bytes, 0, bytes.length));
         if (isoMessage != null) {
             //noinspection unchecked
             out.add(isoMessage);
